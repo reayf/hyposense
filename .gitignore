@@ -1,0 +1,75 @@
+# ============================================================
+# HypoSense — berkas yang TIDAK ikut dilacak
+# ============================================================
+
+# --- Dataset, data klinis & artifak hasil olahan ------------
+# Semua file data tidak disertakan ke repo (dataset publik dapat diunduh
+# ulang; data uji klinik bersifat sensitif).
+**/PhysioCGM/
+**/HUPA-UCM Diabetes Dataset/
+**/bigideas/
+*.csv
+*.xlsx
+*.xls
+*.pkl
+*.npz
+*.parquet
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Dokumen biner & arsip rilis ----------------------------
+*.pdf
+*.docx
+*.pptx
+*.zip
+
+# Salinan proyek yang tak sengaja tersalin ke dalam folder sketsa Arduino
+hyposense-aplikasi/esp32/hyposense_esp32_ble/HypoSense/
+
+# Versi prototype Flutter lama (yang aktif ada di hyposense-aplikasi/)
+hyposense/
+
+# --- Kredensial, environment & keysigning -------------------
+.env
+.env.*
+!.env.example
+local.properties
+key.properties
+*.jks
+*.keystore
+
+# --- Hasil kompilasi & alat bantu ---------------------------
+build/
+.dart_tool/
+.gradle/
+.idea/
+*.apk
+*.aab
+*.iml
+
+# --- Flutter/Dart hasil bangkitan ---------------------------
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# --- Python & Jupyter ---------------------------------------
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+venv/
+.venv/
+tempCodeRunnerFile.py
+
+# --- Setelan alat bantu lokal -------------------------------
+.claude/
+.agent/
+.agents/
+
+# --- Sistem operasi -----------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

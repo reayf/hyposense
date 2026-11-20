@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="hyposense">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>hyposense</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <script>
+    // Helper alarm HypoSense (dipanggil dari Dart via js_interop).
+    // AudioContext harus di-"unlock" oleh gesture pengguna pertama
+    // (kebijakan autoplay browser) — listener pointerdown di bawah.
+    window.hypoAlert = (function () {
+      var ctx = null;
+      function ensureCtx() {
+        if (!ctx) {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) ctx = new AC();
+        }
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+      window.addEventListener('pointerdown', ensureCtx, { passive: true });
+      return {
+        beep: function () {
+          var c = ensureCtx();
+          if (!c) return;
+          var osc = c.createOscillator();
+          var gain = c.createGain();
+          osc.type = 'square';
+          osc.frequency.value = 880;
+          gain.gain.value = 0.25;
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start();
+          setTimeout(function () { try { osc.stop(); } catch (e) {} }, 700);
+        },
+        vibrate: function () {
+          if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+        },
+        tel: function (num) {
+          window.location.href = 'tel:' + num;
+        },
+        // Pilih foto dari perangkat, resize di browser (maks maxSize px),
+        // kembalikan sebagai data-URL JPEG. null jika dibatalkan/gagal.
+        pickImage: function (maxSize) {
+          return new Promise(function (resolve) {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function () {
+              var file = input.files && input.files[0];
+              if (!file) { resolve(null); return; }
+              var img = new Image();
+              img.onload = function () {
+                try {
+                  var scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                  var w = Math.max(1, Math.round(img.width * scale));
+                  var h = Math.max(1, Math.round(img.height * scale));
+                  var canvas = document.createElement('canvas');
+                  canvas.width = w; canvas.height = h;
+                  canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                  resolve(canvas.toDataURL('image/jpeg', 0.85));
+                } catch (e) { resolve(null); }
+                URL.revokeObjectURL(img.src);
+              };
+              img.onerror = function () { resolve(null); };
+              img.src = URL.createObjectURL(file);
+            };
+            input.click();
+          });
+        }
+      };
+    })();
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
